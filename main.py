@@ -8,6 +8,11 @@ import json
 from config import Config
 from agents.graph import create_graph, ComplaintState
 from agents.database import save_complaint_to_supabase
+from agents.intake import process_voice_complaint, process_photo_complaint
+
+from fastapi import UploadFile, File
+import tempfile
+import shutil
 
 # Validate config
 Config.validate()
@@ -126,3 +131,36 @@ if __name__ == "__main__":
         port=port,
         reload=True if os.getenv("ENV") != "production" else False
     )
+
+@app.post("/api/complaints/voice")
+async def submit_voice(file: UploadFile = File(...), ward: str = "Chinhat"):
+    """Submit a voice complaint - Gemini transcribes AND triages"""
+    # Save uploaded file temporarily
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
+        shutil.copyfileobj(file.file, tmp)
+        tmp_path = tmp.name
+    
+    try:
+        # Process with Gemini
+        result = process_voice_complaint(tmp_path)
+        # Clean up
+        os.unlink(tmp_path)
+        return {"status": "processed", "analysis": result}
+    except Exception as e:
+        os.unlink(tmp_path)
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/complaints/photo")
+async def submit_photo(file: UploadFile = File(...), ward: str = "Chinhat"):
+    """Submit a photo complaint - Gemini analyzes vision"""
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
+        shutil.copyfileobj(file.file, tmp)
+        tmp_path = tmp.name
+    
+    try:
+        result = process_photo_complaint(tmp_path)
+        os.unlink(tmp_path)
+        return {"status": "processed", "analysis": result}
+    except Exception as e:
+        os.unlink(tmp_path)
+        raise HTTPException(status_code=500, detail=str(e))

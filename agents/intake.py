@@ -72,32 +72,46 @@ def triage_complaint(complaint_text: str, ward_name: str = "Chinhat") -> dict:
         }
 
 def process_voice_complaint(audio_file_path: str) -> dict:
-    """Send audio directly to Gemini for transcription + triage"""
+    """Send audio to Gemini - transcription + triage in ONE FREE CALL"""
     if Config.DEMO_MODE:
         return {"category": "Other", "severity": 5, "summary_en": "Mock voice complaint processed in demo mode"}
     audio_file = genai.upload_file(audio_file_path)
     response = model.generate_content([
         audio_file,
-        "Listen to this complaint in any Indian language. Transcribe it, "
-        "translate to English, and respond in the TRIAGE_PROMPT JSON format."
+        TRIAGE_PROMPT.format(
+            complaint_text="[Audio file - listen and transcribe]",
+            ward_name="Lucknow",
+            district="Lucknow"
+        )
     ])
     try:
-        return json.loads(response.text)
+        raw_text = response.text.strip()
+        if raw_text.startswith("```json"):
+            raw_text = raw_text[7:]
+        if raw_text.endswith("```"):
+            raw_text = raw_text[:-3]
+        return json.loads(raw_text)
     except:
         return {"category": "Other", "severity": 5, "summary_en": "Could not process audio"}
 
 def process_photo_complaint(image_file_path: str) -> dict:
-    """Send image directly to Gemini for description + triage"""
+    """Send image to Gemini - vision analysis + triage in ONE FREE CALL"""
     if Config.DEMO_MODE:
         return {"category": "Other", "severity": 5, "summary_en": "Mock image complaint processed in demo mode"}
     image_file = genai.upload_file(image_file_path)
     response = model.generate_content([
         image_file,
-        "Describe this image as a civic infrastructure complaint: what is "
-        "broken, estimated severity 1-10, and likely category. Respond in JSON."
+        "Describe this image as a civic infrastructure complaint. "
+        "What is the problem? What type of infrastructure is affected? "
+        "Estimated severity 1-10. Respond in JSON."
     ])
     try:
-        return json.loads(response.text)
+        raw_text = response.text.strip()
+        if raw_text.startswith("```json"):
+            raw_text = raw_text[7:]
+        if raw_text.endswith("```"):
+            raw_text = raw_text[:-3]
+        return json.loads(raw_text)
     except:
         return {"category": "Other", "severity": 5, "summary_en": "Could not process image"}
 
