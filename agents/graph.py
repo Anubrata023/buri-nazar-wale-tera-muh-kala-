@@ -1,4 +1,5 @@
 from typing import TypedDict, Optional
+from typing_extensions import NotRequired
 from langgraph.graph import StateGraph, END
 from agents.intake import triage_complaint, get_embedding
 from agents.database import find_duplicate_complaints
@@ -11,20 +12,20 @@ class ComplaintState(TypedDict):
     phone: str
     
     # Added by agents
-    transcript: Optional[str]
-    category: Optional[str]
-    severity: Optional[int]
-    summary_en: Optional[str]
-    summary_hi: Optional[str]
-    sentiment: Optional[str]
-    scheme_match: Optional[list]
-    estimated_affected: Optional[int]
-    embedding: Optional[list]
-    is_duplicate: Optional[bool]
-    cluster_id: Optional[str]
-    geo_confidence: Optional[float]
-    cost_estimate: Optional[float]
-    priority_score: Optional[float]
+    transcript: NotRequired[Optional[str]]
+    category: NotRequired[Optional[str]]
+    severity: NotRequired[Optional[int]]
+    summary_en: NotRequired[Optional[str]]
+    summary_hi: NotRequired[Optional[str]]
+    sentiment: NotRequired[Optional[str]]
+    scheme_match: NotRequired[Optional[list]]
+    estimated_affected: NotRequired[Optional[int]]
+    embedding: NotRequired[Optional[list]]
+    is_duplicate: NotRequired[Optional[bool]]
+    cluster_id: NotRequired[Optional[str]]
+    geo_confidence: NotRequired[Optional[float]]
+    cost_estimate: NotRequired[Optional[float]]
+    priority_score: NotRequired[Optional[float]]
 
 # ============================================
 # Agent 1: INTAKE ORCHESTRATOR
