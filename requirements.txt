@@ -1,0 +1,10 @@
+supabase==2.3.0
+psycopg2-binary==2.9.10
+pandas==2.2.0
+numpy==1.26.3
+prophet==1.1.5
+scikit-learn==1.5.0
+joblib==1.4.0
+python-dotenv==1.0.0
+firebase-admin==6.5.0
+requests==2.32.0
