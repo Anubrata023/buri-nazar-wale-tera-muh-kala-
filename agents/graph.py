@@ -6,7 +6,7 @@ from langgraph.graph import StateGraph, END
 from typing import TypedDict, Optional
 
 from agents.intake import triage_complaint, get_embedding
-from agents.geospatial import geospatial_node # Wait, geospatial was in graph.py originally. Let me check the previous graph.py. Ah, geospatial_node was inside graph.py in Day 4. 
+
 from agents.fiscal import estimate_cost, match_schemes
 from models.database import find_duplicates
 from agents.demographics import demographics_node
