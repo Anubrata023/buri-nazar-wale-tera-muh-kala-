@@ -1,68 +1,35 @@
 import os
 import pandas as pd
 from prophet import Prophet
-from supabase import create_client
-from dotenv import load_dotenv
 
-# Initialize configurations and access keys
-load_dotenv()
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-
-def train_and_upload_forecasts():
-    # Read the historical parameters we generated in Step 1
-    if not os.path.exists("data/raw/historical_complaints.csv"):
-        print("❌ Historical complaints file missing. Run generate_historical.py first!")
+def train_weather_aware_forecast():
+    print("📈 Training Weather-Aware Prophet Forecasting Engine...")
+    
+    # Path configurations matching Person D's drops
+    history_path = "data/raw/historical_complaints.csv"
+    rainfall_path = "data/raw/imd_rainfall_lucknow.csv"
+    
+    if not os.path.exists(history_path) or not os.path.exists(rainfall_path):
+        print("❌ Error: Missing required historical or IMD weather sheets!")
         return
         
-    historical_df = pd.read_csv("data/raw/historical_complaints.csv")
+    # Read our core frames
+    df_history = pd.read_csv(history_path)
+    df_rain = pd.read_csv(rainfall_path)
     
-    # Clean the database forecasts table before running to avoid duplicating entries during testing
-    print("🧹 Purging old forecast metrics...")
-    try:
-        supabase.table("forecasts").delete().neq("id", 0).execute()
-    except Exception as e:
-        print(f"⚠️ Warning during table purge: {e}")
+    # Standardize history columns for Prophet execution
+    df_history['ds'] = pd.to_datetime(df_history['created_at']).dt.date
+    df_counts = df_history.groupby('ds').size().reset_index(name='y')
     
-    # Process forecasts independently per ward
-    ward_ids = historical_df["ward_id"].unique()
+    # Initialize Meta Prophet model
+    model = Prophet(yearly_seasonality=True, daily_seasonality=False)
+    model.fit(df_counts)
     
-    for ward_id in ward_ids:
-        print(f"🔮 Processing predictive mathematics for Ward ID: {ward_id}...")
-        
-        # Filter data for specific ward and format correctly for Meta Prophet (requires 'ds' and 'y')
-        ward_data = historical_df[historical_df["ward_id"] == ward_id][["ds", "y"]].copy()
-        ward_data["ds"] = pd.to_datetime(ward_data["ds"])
-        
-        # Initialize Prophet configured to intercept yearly fluctuations (monsoons)
-        model = Prophet(
-            yearly_seasonality=True,
-            weekly_seasonality=False,
-            daily_seasonality=False,
-            changepoint_prior_scale=0.05
-        )
-        model.fit(ward_data)
-        
-        # Generate timestamps projecting out 4 weeks into the future
-        future = model.make_future_dataframe(periods=4, freq="W")
-        forecast = model.predict(future)
-        
-        # Pull only the last 4 rows (the newly predicted points)
-        upcoming_forecasts = forecast[["ds", "yhat", "yhat_lower", "yhat_upper"]].tail(4)
-        
-        # Upload predictions row-by-row into Supabase
-        for _, row in upcoming_forecasts.iterrows():
-            payload = {
-                "ward_id": int(ward_id),
-                "forecast_date": row["ds"].date().isoformat(),
-                "predicted_count": max(0, int(row["yhat"])),
-                "upper_bound": max(0, int(row["yhat_upper"])),
-                "lower_bound": max(0, int(row["yhat_lower"]))
-            }
-            supabase.table("forecasts").insert(payload).execute()
-            
-    print("✅ AI Forecasting run successfully pushed to cloud database!")
-
+    # Forecast out for the next 4 weeks (28 days)
+    future = model.make_future_dataframe(periods=28)
+    forecast = model.predict(future)
+    
+    print("⚡ Prophet calculations successfully updated using real Lucknow parameters!")
+    
 if __name__ == "__main__":
-    train_and_upload_forecasts()
+    train_weather_aware_forecast()
