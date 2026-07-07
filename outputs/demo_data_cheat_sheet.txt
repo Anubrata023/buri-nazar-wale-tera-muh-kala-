@@ -1,0 +1,40 @@
+# Demo Data Cheat Sheet
+
+## 5 Demo Complaints
+
+| ID | Complaint | Ward | Priority | Category |
+|----|-----------|------|----------|----------|
+| 001 | Handpump broken 3 weeks | Chinhat | 78/100 | Water |
+| 002 | School toilets missing | Kakori | 82/100 | Education |
+| 003 | Flooded road | Sarojini Nagar | 71/100 | Roads |
+| 004 | Electric pole broken | Alambagh | 68/100 | Electricity |
+| 005 | Same handpump - merged | Chinhat | 78/100 | Water |
+
+## Real Data Points
+
+| Data Point | Value |
+|------------|-------|
+| Chinhat Population | 3,400 residents |
+| Nearest School (Sarojini Nagar) | 4.2km |
+| JJM Coverage (Chinhat) | 62% |
+| LADS Budget (Lucknow) | Rs 5 crore |
+| Cost Estimate (Handpump) | Rs 45,000 |
+
+## Demo URLs
+
+| URL | Purpose |
+|-----|---------|
+| https://jansaath-ui.onrender.com | Citizen Portal |
+| https://jansaath-admin.onrender.com | Admin Dashboard |
+| https://jansaath-public.onrender.com | Public Dashboard |
+| https://jansaath-api.onrender.com | Backend API |
+| [YouTube Link] | Backup Video |
+
+## Team Roles During Demo
+
+| Person | Role |
+|--------|------|
+| Person D | Narrator - Introduces and closes |
+| Person B | Screen Driver - Clicks everything |
+| Person A | Technical Standby - Fixes bugs |
+| Person C | Data Standby - Corrects numbers |

@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import io
 from supabase import create_client, Client
 from dotenv import load_dotenv
 
@@ -16,21 +17,25 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 def seed_production_database():
     print("🚀 Starting Production Database Enrichment Seeder...")
     
-    # Load and clean datasets verbatim from Person D's repository
-    wards_df = pd.read_csv("datasets/processed/lucknow_wards_clean.csv")
-    jjm_df = pd.read_csv("data/raw/jjm_coverage_lucknow.csv")
-    udise_df = pd.read_csv("data/raw/udise_schools_lucknow.csv")
+    # Check potential path locations for the baseline files
+    wards_path = "datasets/processed/lucknow_wards_clean.csv" if os.path.exists("datasets/processed/lucknow_wards_clean.csv") else "lucknow_wards_clean.csv"
+    jjm_path = "data/raw/jjm_coverage_lucknow.csv" if os.path.exists("data/raw/jjm_coverage_lucknow.csv") else "jjm_coverage_lucknow.csv"
+    udise_path = "data/raw/udise_schools_lucknow.csv" if os.path.exists("data/raw/udise_schools_lucknow.csv") else "udise_schools_lucknow.csv"
     
-    # Strip any trailing whitespace from names to prevent join errors
+    # Load baseline assets
+    wards_df = pd.read_csv(wards_path)
+    jjm_df = pd.read_csv(jjm_path)
+    udise_df = pd.read_csv(udise_path)
+    
+    # Clean whitespace strings
     wards_df['ward_name'] = wards_df['ward_name'].str.strip()
     jjm_df['ward_name'] = jjm_df['ward_name'].str.strip()
     udise_df['ward_name'] = udise_df['ward_name'].str.strip()
     
-    # Merge the clean tables side-by-side using the ward names as our relational key
+    # Merge datasets natively
     merged_df = pd.merge(wards_df, jjm_df, on="ward_name", how="left")
     merged_df = pd.merge(merged_df, udise_df, on="ward_name", how="left")
     
-    # Fill any missing metrics gracefully with standard defaults
     merged_df.fillna({
         'households_with_tap_connection_pct': 0.0,
         'functional_connection_pct': 0.0,
@@ -46,7 +51,6 @@ def seed_production_database():
     
     print(f"📊 Processed {len(merged_df)} enriched wards. Uploading to cloud tables...")
     
-    # Format the local records to perfectly align with our updated PostgreSQL fields
     for _, row in merged_df.iterrows():
         ward_data = {
             "name": str(row["ward_name"]),
@@ -74,21 +78,23 @@ def seed_production_database():
     print("✅ Live Production Database successfully populated with real infrastructure data metrics!")
 
 def seed_test_complaints():
-    print("📋 Injecting 50 production test complaints into Supabase...")
+    print("📋 Injecting Person D's official demo_complaints data into Supabase...")
     
-    # Load the complaints we just generated
-    if not os.path.exists("datasets/processed/test_complaints.csv"):
-        print("❌ Error: test_complaints.csv missing! Run generate_test_complaints.py first.")
-        return
-        
-    complaints_df = pd.read_csv("datasets/processed/test_complaints.csv")
+    # Directly embed the exact CSV content Person D provided to bypass file checking issues
+    csv_data = """phone,ward,raw_text,category,severity,summary_en,summary_hi,lat,lng
+919800000001,Chinhat,"Hamare mohalle mein handpump 3 hafte se band hai, pani nahi aa raha",Water,8,"Handpump broken in Chinhat for 3 weeks, no water","Chinhat mein handpump 3 hafte se band hai, pani nahi aa raha",26.86,80.94
+919800000002,Kakori,The school in our area has no toilets — girls are dropping out,Education,9,"School toilets missing in Kakori, girls dropping out","Kakori mein school mein toilet nahi hai, ladkiyan school chhod rahi hain",26.88,80.8
+919800000003,Sarojini Nagar,Photo of flooded road submitted - pani bhar gaya hai sadak mein,Roads,7,Flooded road in Sarojini Nagar after heavy rain,Sarojini Nagar mein sadak mein paani bhar gaya hai,26.82,80.98
+919800000004,Alambagh,"Bijli ka khamba toot gaya hai, raat ko andhera rehta hai",Electricity,6,"Electric pole broken in Alambagh, darkness at night","Alambagh mein bijli ka khamba toot gaya hai, raat ko andhera",26.78,80.92
+919800000005,Chinhat,"Mera handpump bhi kharab hai, 47 log ne report kiya - pani nahi aa raha",Water,8,Same handpump broken - 47 citizens reported - merged issue,Wahi handpump - 47 log ne report kiya - merged issue,26.86,80.94"""
+
+    complaints_df = pd.read_csv(io.StringIO(csv_data))
     
-    # Fetch existing wards from Supabase to match the IDs correctly
     response = supabase.table("wards").select("id, name").execute()
-    ward_mapping = {ward['name']: ward['id'] for ward in response.data}
+    ward_mapping = {ward['name'].strip(): ward['id'] for ward in response.data}
     
     for _, row in complaints_df.iterrows():
-        ward_name = row["ward"].strip()
+        ward_name = str(row["ward"]).strip()
         ward_id = ward_mapping.get(ward_name)
         
         if not ward_id:
@@ -103,15 +109,17 @@ def seed_test_complaints():
             "priority_score": int(row["severity"]) * 10,
             "status": "pending",
             "lat": float(row["lat"]),
-            "lng": float(row["lng"])
+            "lng": float(row["lng"]),
+            "summary_en": str(row["summary_en"]),  
+            "summary_hi": str(row["summary_hi"])   
         }
         
         try:
             supabase.table("complaints").insert(complaint_data).execute()
         except Exception as e:
-            print(f"⚠️ Failed to insert complaint: {e}")
+            print(f"⚠️ Failed to insert complaint entry: {e}")
             
-    print("🎉 50 Enriched Test Complaints successfully loaded into the cloud!")
+    print("🎉 Official dual-language demo complaints successfully seeded into the cloud structure!")
 
 if __name__ == "__main__":
     seed_production_database()
