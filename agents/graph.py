@@ -107,9 +107,9 @@ def fiscal_node(state: ComplaintState) -> ComplaintState:
     print("💰 Fiscal Agent: Estimating cost...")
     
     category = state.get("category", "Other")
-    population = state.get("estimated_affected", 100)
+    ward = state.get("ward", "Chinhat")
     
-    state["cost_estimate"] = estimate_cost(category, population)
+    state["cost_estimate"] = estimate_cost(category, ward)
     if not state.get("scheme_match"):
         state["scheme_match"] = match_schemes(category)
     

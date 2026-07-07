@@ -1,0 +1,51 @@
+phone,ward,raw_text,category,severity,lat,lng
+919800000001,Chinhat,"Hamare mohalle mein handpump 3 hafte se band hai, pani nahi aa raha",Water,8,26.86,80.94
+919800000002,Kakori,The school in our area has no toilets — girls are dropping out,Education,9,26.88,80.8
+919800000003,Sarojini Nagar,Photo of flooded road submitted - pani bhar gaya hai sadak mein,Roads,7,26.82,80.98
+919800000004,Alambagh,"Bijli ka khamba toot gaya hai, raat ko andhera rehta hai",Electricity,6,26.78,80.92
+919800000005,Chinhat,"Mera handpump bhi kharab hai, 47 log ne report kiya - pani nahi aa raha",Water,8,26.86,80.94
+919810000006,Sarojini Nagar,Rasta band hai,Roads,6,26.8166,80.9873
+919810000007,Gomti Nagar,Gutter jam gaya hai,Sanitation,9,26.8731,80.9816
+919810000008,Sarojini Nagar,Gutter jam gaya hai,Sanitation,5,26.8291,80.9896
+919810000009,Kakori,Paani ki pipeline phut gayi hai,Water,7,26.8707,80.8073
+919810000010,Gomti Nagar,Street light kharab hai,Electricity,9,26.8774,80.977
+919810000011,Gomti Nagar,Street light kharab hai,Electricity,5,26.8729,80.9832
+919810000012,Alambagh,School building kharab hai,Education,9,26.7762,80.9199
+919810000013,Kakori,Nali band hai,Sanitation,7,26.8755,80.7917
+919810000014,Sarojini Nagar,Rasta band hai,Roads,8,26.8135,80.9821
+919810000015,Sarojini Nagar,PHC mein dawai nahi hai,Health,6,26.816,80.9717
+919810000016,Chinhat,Sadak toot gayi hai,Roads,5,26.8693,80.9472
+919810000017,Gomti Nagar,"Handpump band hai, pani nahi aa raha",Water,7,26.8729,80.9737
+919810000018,Kakori,Transformer jal gaya hai,Electricity,3,26.8734,80.7988
+919810000019,Kakori,Gutter jam gaya hai,Sanitation,9,26.8707,80.8044
+919810000020,Alambagh,Gutter jam gaya hai,Sanitation,7,26.7866,80.9158
+919810000021,Alambagh,Sadak mein gaddha hai,Roads,3,26.7837,80.912
+919810000022,Alambagh,Nali band hai,Sanitation,6,26.7761,80.917
+919810000023,Alambagh,Rasta band hai,Roads,8,26.7814,80.9261
+919810000024,Chinhat,School building kharab hai,Education,3,26.8677,80.9488
+919810000025,Sarojini Nagar,PHC mein dawai nahi hai,Health,6,26.8186,80.9783
+919810000026,Alambagh,Teacher nahi aate,Education,5,26.7816,80.9205
+919810000027,Chinhat,Ambulance nahi hai,Health,3,26.8538,80.9324
+919810000028,Kakori,Sadak mein gaddha hai,Roads,8,26.8768,80.8096
+919810000029,Kakori,School mein toilet nahi hai,Education,6,26.8752,80.7959
+919810000030,Sarojini Nagar,Doctor nahi aate PHC mein,Health,3,26.8204,80.9834
+919810000031,Sarojini Nagar,Teacher nahi aate,Education,4,26.8109,80.9846
+919810000032,Sarojini Nagar,Gutter jam gaya hai,Sanitation,9,26.8167,80.9846
+919810000033,Sarojini Nagar,PHC mein dawai nahi hai,Health,3,26.8221,80.9743
+919810000034,Sarojini Nagar,Doctor nahi aate PHC mein,Health,3,26.8261,80.9701
+919810000035,Gomti Nagar,Bijli nahi aa rahi hai,Electricity,9,26.8711,80.9851
+919810000036,Gomti Nagar,Ambulance nahi hai,Health,7,26.8779,80.9732
+919810000037,Gomti Nagar,Doctor nahi aate PHC mein,Health,6,26.8761,80.9723
+919810000038,Chinhat,Teacher nahi aate,Education,3,26.851,80.9403
+919810000039,Gomti Nagar,Doctor nahi aate PHC mein,Health,7,26.8744,80.9849
+919810000040,Chinhat,School building kharab hai,Education,8,26.8509,80.9448
+919810000041,Gomti Nagar,Paani ki pipeline phut gayi hai,Water,3,26.8765,80.9845
+919810000042,Gomti Nagar,Rasta band hai,Roads,4,26.8652,80.9853
+919810000043,Alambagh,Sadak mein gaddha hai,Roads,9,26.7854,80.9139
+919810000044,Alambagh,Nali band hai,Sanitation,6,26.7784,80.9163
+919810000045,Kakori,Bijli nahi aa rahi hai,Electricity,9,26.8818,80.7903
+919810000046,Sarojini Nagar,Ambulance nahi hai,Health,4,26.8125,80.971
+919810000047,Chinhat,Paani ki tanki kharab hai,Water,3,26.8519,80.9355
+919810000048,Alambagh,Sadak toot gayi hai,Roads,4,26.7875,80.9183
+919810000049,Chinhat,Bijli nahi aa rahi hai,Electricity,7,26.8591,80.9447
+919810000050,Gomti Nagar,"Handpump band hai, pani nahi aa raha",Water,5,26.8731,80.9834

@@ -1,0 +1,11 @@
+ward_name,households_with_tap_connection_pct,functional_connection_pct,primary_source,nearest_alt_water_source_km
+Chinhat,52.9,55.9,groundwater/borewell,0.8
+Kakori,56.8,60.4,groundwater/borewell,1.7
+Sarojini Nagar,68.1,72.6,municipal pipeline,1.2
+Alambagh,63.8,83.0,municipal pipeline,0.3
+Gomti Nagar,80.7,82.4,municipal pipeline,0.6
+Hazratganj,61.1,83.3,municipal pipeline,1.5
+Chowk,75.6,82.4,municipal pipeline,0.3
+Mahanagar,68.2,69.3,municipal pipeline,1.8
+Rajajipuram,73.5,73.6,municipal pipeline,0.3
+Indiranagar,67.2,73.5,municipal pipeline,1.5

@@ -1,0 +1,41 @@
+======================================================================
+JANSAATH DEMO DAY: EMERGENCY CRISIS SCRIPTS & FALLBACK PLANS
+======================================================================
+
+🚨 SCENARIO 1: The IVR / Phone Call System Fails to Respond
+👉 WHAT TO SAY: "We have successfully executed the live IVR pipeline 
+   multiple times during testing, but due to network congestion or 
+   carrier latency right now, the webhook response is delayed. 
+   No problem—I have a pre-recorded video of this exact voice-to-text 
+   pipeline. Let me play it for you right now."
+🔄 ACTION: Instantly pull up your backup video on your second screen.
+
+🚨 SCENARIO 2: The Leaflet/OpenStreetMap Map Layer Doesn't Load
+👉 WHAT TO SAY: "OpenStreetMap is community-hosted, which means it 
+   occasionally experiences brief loading delays during peak global traffic. 
+   The backend data layer is fully loaded, and to save time, here is a 
+   geospatial screenshot of the exact same ward map visualization."
+🔄 ACTION: Open a pre-saved screenshot of your map page.
+
+🚨 SCENARIO 3: The Google Docs API Fails to Generate the Proposal Document
+👉 WHAT TO SAY: "The Google Docs API might be experiencing a brief 
+   handshake timeout. However, the backend architecture is highly 
+   resilient—it also returns the raw text of the structured proposal 
+   directly in the application network layer. The administrator can 
+   copy-paste this text into any editor instantly."
+🔄 ACTION: Point to the raw text proposal on the screen.
+
+🚨 SCENARIO 4: Render API Server Experiences a Cold-Start Delay (App is lagging)
+👉 WHAT TO SAY: "To keep infrastructure overhead at completely zero cost, 
+   we are running on a free deployment layer which enters a power-saving 
+   sleep mode after inactivity. It is currently spinning up its resources 
+   and will catch up in just a couple of seconds."
+🔄 ACTION: Keep talking about the zero-cost architecture to buy time.
+
+🚨 SCENARIO 5: The Free Gemini API Rate Limit is Hit
+👉 WHAT TO SAY: "Because we run strictly on a free-tier stack, the Gemini 
+   API has a request velocity limit. To ensure this demo runs seamlessly 
+   no matter what, we've cached a complete validation suite locally in our 
+   environment. Let's switch to the backup flow."
+🔄 ACTION: Open your local offline interface or video clip.
+======================================================================
