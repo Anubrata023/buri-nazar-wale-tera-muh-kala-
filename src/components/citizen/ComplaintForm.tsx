@@ -25,15 +25,7 @@ export function ComplaintForm({ type: _type, onSubmitted, onClose }: { type?: 't
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const categories = [
-    { id: 'Sanitation', emoji: '🗑️', label: 'Sanitation' },
-    { id: 'Water', emoji: '💧', label: 'Water' },
-    { id: 'Roads', emoji: '🛣️', label: 'Roads' },
-    { id: 'Electricity', emoji: '⚡', label: 'Electricity' },
-    { id: 'Education', emoji: '📚', label: 'Education' },
-    { id: 'Health', emoji: '🏥', label: 'Health' },
-    { id: 'Other', emoji: '📋', label: 'Other' },
-  ];
+  const categories = ['Sanitation', 'Water', 'Roads', 'Electricity', 'Education', 'Health', 'Other'];
 
   // Handle Speech Recognition
   const handleVoiceTyping = () => {
@@ -178,70 +170,31 @@ export function ComplaintForm({ type: _type, onSubmitted, onClose }: { type?: 't
   };
 
   if (successResult) {
-    const score = successResult.analysis?.priority_score || 55;
-    const scoreColor = score >= 75 ? 'text-red-500' : score >= 50 ? 'text-amber-500' : 'text-emerald-500';
-    const scoreBg = score >= 75 ? 'bg-red-50 border-red-200' : score >= 50 ? 'bg-amber-50 border-amber-200' : 'bg-emerald-50 border-emerald-200';
-    const urgency = score >= 75 ? 'HIGH PRIORITY' : score >= 50 ? 'MEDIUM PRIORITY' : 'STANDARD';
     return (
-      <div className="bg-white p-8 rounded-3xl shadow-lg border border-zinc-150 max-w-xl mx-auto mt-6 animate-fade-in">
-        {/* Top status bar */}
-        <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-2xl p-3 mb-6">
-          <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse flex-shrink-0" />
-          <span className="text-xs font-black text-emerald-700">Complaint submitted & routed to AI triage engine</span>
+      <div className="bg-white p-8 rounded-3xl shadow-lg border border-zinc-150 max-w-xl mx-auto mt-6 text-center animate-fade-in">
+        <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span className="text-3xl text-emerald-600">✅</span>
         </div>
-
-        {/* Score gauge */}
-        <div className="text-center mb-6">
-          <div className="inline-flex flex-col items-center justify-center w-32 h-32 rounded-full border-4 border-zinc-100 shadow-inner mb-3">
-            <span className={`text-4xl font-black ${scoreColor}`}>{score}</span>
-            <span className="text-[8px] font-black text-zinc-400 uppercase tracking-widest">Priority Score</span>
-          </div>
-          <div className={`inline-block text-[9px] font-black px-3 py-1 rounded-full border ${scoreBg} ${scoreColor} uppercase tracking-wider`}>
-            {urgency}
-          </div>
+        <h3 className="text-xl font-black text-slate-800 mb-2">{t('submitted')}</h3>
+        <p className="text-zinc-500 text-xs leading-relaxed mb-6">
+          Your concern has been registered. The intelligence engine is routing verification checks.
+        </p>
+        <div className="bg-zinc-50 rounded-2xl p-4 text-left text-xs mb-6 space-y-2 border border-zinc-150">
+          <p className="font-bold text-slate-700">Triage Profile:</p>
+          <p><span className="text-zinc-400 font-semibold">Category:</span> <span className="font-bold text-slate-800">{successResult.analysis.category}</span></p>
+          <p><span className="text-zinc-400 font-semibold">Severity:</span> <span className="font-bold text-slate-800">{successResult.analysis.severity}/10</span></p>
+          <p><span className="text-zinc-400 font-semibold">Priority:</span> <span className="font-bold text-jan-coral">{successResult.analysis.priority_score}/100</span></p>
         </div>
-
-        {/* Triage details */}
-        <div className="bg-zinc-50 rounded-2xl p-5 text-left space-y-3 border border-zinc-150 mb-6">
-          <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2">AI Triage Report</p>
-          <div className="flex justify-between text-xs">
-            <span className="text-zinc-500 font-semibold">Complaint ID</span>
-            <span className="font-black text-slate-800">{successResult.id || `JS-${Math.floor(Math.random() * 9000 + 1000)}`}</span>
-          </div>
-          <div className="flex justify-between text-xs">
-            <span className="text-zinc-500 font-semibold">Category Detected</span>
-            <span className="font-black text-slate-800">{successResult.analysis?.category || category}</span>
-          </div>
-          <div className="flex justify-between text-xs">
-            <span className="text-zinc-500 font-semibold">Severity Level</span>
-            <span className="font-black text-slate-800">{successResult.analysis?.severity || 5}/10</span>
-          </div>
-          <div className="flex justify-between text-xs">
-            <span className="text-zinc-500 font-semibold">Status</span>
-            <span className="font-black text-emerald-600">✅ In Queue — Under Review</span>
-          </div>
-        </div>
-
-        {/* Status tracker */}
-        <div className="flex items-center gap-1 mb-6">
-          {['Submitted', 'AI Triage', 'Review', 'Action'].map((step, i) => (
-            <div key={step} className="flex items-center gap-1 flex-1">
-              <div className={`w-6 h-6 rounded-full text-[8px] font-black flex items-center justify-center flex-shrink-0 ${
-                i <= 1 ? 'bg-jan-coral text-white' : 'bg-zinc-100 text-zinc-400'
-              }`}>{i + 1}</div>
-              {i < 3 && <div className={`h-0.5 flex-1 ${ i < 1 ? 'bg-jan-coral' : 'bg-zinc-200'}`} />}
-            </div>
-          ))}
-        </div>
-        <div className="flex gap-2 text-[9px] font-black text-zinc-400 uppercase justify-between mb-6">
-          {['Submitted', 'AI Triage', 'Review', 'Action'].map(s => <span key={s}>{s}</span>)}
-        </div>
-
-        <button
-          onClick={() => { setSuccessResult(null); setDescription(''); setWard(''); setPhoto(null); }}
-          className="w-full bg-slate-900 text-white font-black py-3.5 rounded-xl hover:bg-slate-800 active:scale-95 transition-all cursor-pointer text-sm"
+        <button 
+          onClick={() => {
+            setSuccessResult(null);
+            setDescription('');
+            setWard('');
+            setPhoto(null);
+          }}
+          className="w-full bg-slate-900 text-white font-bold py-3.5 rounded-xl hover:bg-slate-800 active:scale-95 transition-all cursor-pointer"
         >
-          Submit Another Complaint
+          File Another Report
         </button>
       </div>
     );
@@ -313,37 +266,31 @@ export function ComplaintForm({ type: _type, onSubmitted, onClose }: { type?: 't
             </div>
           </div>
 
-          {/* Category Section — Icon Tile Grid for low-literacy users */}
-          <div>
-            <label className="block text-[10px] font-black uppercase text-zinc-400 tracking-wider mb-3">{t('category')}</label>
-            <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setCategory(cat.id)}
-                  className={`flex flex-col items-center gap-1.5 p-3 rounded-2xl border-2 transition-all cursor-pointer text-center ${
-                    category === cat.id
-                      ? 'border-jan-coral bg-red-50 shadow-sm'
-                      : 'border-zinc-150 bg-zinc-50 hover:border-zinc-300'
-                  }`}
-                >
-                  <span className="text-2xl">{cat.emoji}</span>
-                  <span className={`text-[9px] font-black uppercase tracking-wide leading-tight ${
-                    category === cat.id ? 'text-jan-coral' : 'text-zinc-500'
-                  }`}>{cat.label}</span>
-                </button>
-              ))}
+          {/* Category Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-[10px] font-black uppercase text-zinc-400 tracking-wider mb-2">{t('category')}</label>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full bg-zinc-50 border border-zinc-150 rounded-xl px-4 py-3.5 text-xs focus:outline-none focus:ring-2 focus:ring-jan-coral focus:bg-white transition-all font-bold text-slate-800 appearance-none cursor-pointer"
+              >
+                {categories.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
             </div>
+
             {category === 'Other' && (
-              <div className="mt-3 animate-fade-in">
+              <div className="animate-fade-in">
+                <label className="block text-[10px] font-black uppercase text-zinc-400 tracking-wider mb-2">{t('specify_other')}</label>
                 <input
                   type="text"
                   required
-                  placeholder="Describe category (e.g. Animal Control)"
+                  placeholder="e.g. Animal Control"
                   value={customCategory}
                   onChange={(e) => setCustomCategory(e.target.value)}
-                  className="w-full bg-zinc-50 border border-zinc-150 rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-jan-coral transition-all font-bold text-slate-800"
+                  className="w-full bg-zinc-50 border border-zinc-150 rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-jan-coral focus:bg-white transition-all font-bold text-slate-800"
                 />
               </div>
             )}
