@@ -41,21 +41,22 @@ export function InsightPanel({ complaint, onClose, onStatusUpdate }: InsightPane
   const handleDraftProposal = async () => {
     if (!complaint) return;
     setGenerating(true);
+    const mockUrl = `https://docs.google.com/document/d/1mock-${complaint.id}/edit`;
     try {
       const result = await generateProposal(complaint.id);
-      if (result.proposal && result.proposal.doc_url) {
-        setDocUrl(result.proposal.doc_url);
-        window.open(result.proposal.doc_url, '_blank');
-      } else {
-        const mockUrl = `https://docs.google.com/document/d/1mock-${complaint.id}/edit`;
-        setDocUrl(mockUrl);
-        window.open(mockUrl, '_blank');
+      const targetUrl = (result.proposal && result.proposal.doc_url) ? result.proposal.doc_url : mockUrl;
+      setDocUrl(targetUrl);
+      const newWindow = window.open(targetUrl, '_blank');
+      if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+        alert("Popup blocker active! You can click the Google Doc draft link in the green box below.");
       }
     } catch (error) {
       console.error(error);
-      const mockUrl = `https://docs.google.com/document/d/1mock-${complaint.id}/edit`;
       setDocUrl(mockUrl);
-      window.open(mockUrl, '_blank');
+      const newWindow = window.open(mockUrl, '_blank');
+      if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+        alert("Popup blocker active! You can click the Google Doc draft link in the green box below.");
+      }
     } finally {
       setGenerating(false);
     }
@@ -179,9 +180,19 @@ export function InsightPanel({ complaint, onClose, onStatusUpdate }: InsightPane
           </Button>
 
           {docUrl && (
-            <div className="mt-4 bg-green-950/40 border border-green-800 rounded-xl p-3 flex items-center gap-2 animate-fade-in">
-              <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" />
-              <span className="text-xs text-green-300 font-bold">{t('proposal_success')}</span>
+            <div className="mt-4 bg-green-950/40 border border-green-800 rounded-xl p-3 flex flex-col gap-2 animate-fade-in text-left">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" />
+                <span className="text-xs text-green-300 font-bold">{t('proposal_success')}</span>
+              </div>
+              <a 
+                href={docUrl} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-xs font-bold text-blue-400 underline hover:text-blue-300 ml-6 block"
+              >
+                🔗 Open Google Doc Draft
+              </a>
             </div>
           )}
 

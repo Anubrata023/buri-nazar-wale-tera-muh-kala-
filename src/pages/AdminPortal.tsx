@@ -13,9 +13,12 @@ export function AdminPortal() {
   const { complaints } = useRealtimeComplaints();
 
   const handleDraftProposalAll = () => {
-    // Generate draft for first complaint or mock draft
     const mockUrl = `https://docs.google.com/document/d/1mock-master-proposal/edit`;
-    window.open(mockUrl, '_blank');
+    const newWindow = window.open(mockUrl, '_blank');
+    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+      alert("Popup blocker detected! Redirecting to draft proposal in this tab...");
+      window.location.href = mockUrl;
+    }
   };
 
   return (
