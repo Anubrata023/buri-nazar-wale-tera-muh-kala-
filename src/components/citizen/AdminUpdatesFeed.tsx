@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { listenToAdminFeed } from '../../firebase';
 import { Card, CardContent } from '../ui/card';
 import { Megaphone, MapPin, Tag, Calendar, ShieldCheck } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 export function AdminUpdatesFeed() {
   const [posts, setPosts] = useState<any[]>([]);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const unsubscribe = listenToAdminFeed((data) => {
@@ -23,8 +25,8 @@ export function AdminUpdatesFeed() {
   return (
     <div className="w-full mt-6">
       <div className="flex justify-between items-center mb-6 px-2">
-        <div>
-          <h2 className="text-xl font-black text-jan-slate tracking-tight">Admin Updates</h2>
+        <div className="text-left">
+          <h2 className="text-xl font-black text-jan-slate tracking-tight">{t('admin_updates')}</h2>
           <p className="text-xs text-gray-500 mt-1">Official announcements and progress updates from the MP Office</p>
         </div>
         <span className="flex items-center gap-2 text-xs font-bold text-emerald-600 bg-white border border-emerald-200 px-3 py-1.5 rounded-full shadow-sm">
@@ -37,8 +39,7 @@ export function AdminUpdatesFeed() {
         {posts.length === 0 ? (
           <div className="bg-white border border-zinc-150 rounded-2xl p-12 text-center text-zinc-500 shadow-sm">
             <Megaphone className="w-12 h-12 text-zinc-300 mx-auto mb-4" />
-            <p className="font-bold text-slate-800">No updates from the administrator yet.</p>
-            <p className="text-xs text-zinc-400 mt-1">Official progress updates will be posted here as complaints get resolved.</p>
+            <p className="font-bold text-slate-800">{t('no_updates')}</p>
           </div>
         ) : (
           posts.map((post) => (
@@ -52,7 +53,7 @@ export function AdminUpdatesFeed() {
                     <div>
                       <div className="text-xs font-black text-slate-800 flex items-center gap-1.5">
                         {post.adminName || 'MP Office'}
-                        <span className="bg-jan-coral/10 text-jan-coral text-[8px] font-black tracking-widest px-1.5 py-0.5 rounded uppercase">Official</span>
+                        <span className="bg-jan-coral/10 text-jan-coral text-[8px] font-black tracking-widest px-1.5 py-0.5 rounded uppercase">{t('official_tag')}</span>
                       </div>
                       <div className="text-[9px] font-semibold text-zinc-400 flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
@@ -91,3 +92,4 @@ export function AdminUpdatesFeed() {
     </div>
   );
 }
+export default AdminUpdatesFeed;

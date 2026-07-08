@@ -3,8 +3,10 @@ import { listenToAdminFeed, postAdminFeedUpdate } from '../../firebase';
 import { Card, CardContent } from '../ui/card';
 import { Button } from '../ui/button';
 import { Megaphone, MapPin, Tag, Calendar, User } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 export function AdminFeed() {
+  const { t } = useLanguage();
   const [posts, setPosts] = useState<any[]>([]);
   const [message, setMessage] = useState('');
   const [ward, setWard] = useState('');
@@ -40,7 +42,7 @@ export function AdminFeed() {
     }
   };
 
-  const badgeStyles = {
+  const badgeStyles: Record<'update' | 'resolved' | 'alert' | 'fund', string> = {
     update: 'bg-blue-900/40 text-blue-300 border-blue-800',
     resolved: 'bg-emerald-900/40 text-emerald-300 border-emerald-800',
     alert: 'bg-red-900/40 text-red-300 border-red-800',
@@ -52,15 +54,15 @@ export function AdminFeed() {
       {/* Post Section */}
       <div className="lg:col-span-1 bg-[#141b2b] border border-white/5 rounded-3xl p-6 shadow-lg space-y-4">
         <h3 className="text-sm font-black uppercase text-zinc-300 tracking-wider flex items-center gap-2">
-          <Megaphone className="w-4.5 h-4.5 text-jan-coral" /> Post Progress Update
+          <Megaphone className="w-4.5 h-4.5 text-jan-coral" /> {t('post_update')}
         </h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 text-left">
           <div>
-            <label className="block text-[10px] font-black uppercase text-zinc-400 tracking-wider mb-2">Update Message</label>
+            <label className="block text-[10px] font-black uppercase text-zinc-400 tracking-wider mb-2">{t('update_msg')}</label>
             <textarea
               required
               rows={4}
-              placeholder="Provide a detailed update about complaint resolution, fund allocation, or ward progress..."
+              placeholder="..."
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               className="w-full bg-black/40 border border-white/10 rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-jan-coral text-white placeholder-zinc-500 font-medium"
@@ -69,7 +71,7 @@ export function AdminFeed() {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[10px] font-black uppercase text-zinc-400 tracking-wider mb-2">Category</label>
+              <label className="block text-[10px] font-black uppercase text-zinc-400 tracking-wider mb-2">{t('category_label')}</label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
@@ -81,7 +83,7 @@ export function AdminFeed() {
               </select>
             </div>
             <div>
-              <label className="block text-[10px] font-black uppercase text-zinc-400 tracking-wider mb-2">Update Type</label>
+              <label className="block text-[10px] font-black uppercase text-zinc-400 tracking-wider mb-2">{t('update_type')}</label>
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value as any)}
@@ -96,7 +98,7 @@ export function AdminFeed() {
           </div>
 
           <div>
-            <label className="block text-[10px] font-black uppercase text-zinc-400 tracking-wider mb-2">Ward / Area (Optional)</label>
+            <label className="block text-[10px] font-black uppercase text-zinc-400 tracking-wider mb-2">{t('ward_optional')}</label>
             <input
               type="text"
               placeholder="e.g. Chinhat"
@@ -111,7 +113,7 @@ export function AdminFeed() {
             disabled={posting}
             className="w-full bg-jan-coral hover:bg-red-500 text-white font-black py-3 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer text-xs"
           >
-            {posting ? 'Posting Update...' : '📢 Publish Progress Update'}
+            {posting ? 'Posting Update...' : t('publish_update')}
           </Button>
         </form>
       </div>
@@ -119,7 +121,7 @@ export function AdminFeed() {
       {/* Feed List Section */}
       <div className="lg:col-span-2 space-y-4">
         <div className="flex justify-between items-center px-1">
-          <h3 className="text-sm font-black uppercase text-zinc-300 tracking-wider">Live Updates Feed</h3>
+          <h3 className="text-sm font-black uppercase text-zinc-300 tracking-wider">{t('live_feed')}</h3>
           <span className="text-[10px] font-black text-zinc-500">{posts.length} posts published</span>
         </div>
 
@@ -127,8 +129,7 @@ export function AdminFeed() {
           {posts.length === 0 ? (
             <div className="bg-[#141b2b] border border-white/5 rounded-3xl p-12 text-center text-zinc-500">
               <Megaphone className="w-12 h-12 text-zinc-600 mx-auto mb-4" />
-              <p className="font-bold">No progress updates posted yet.</p>
-              <p className="text-xs text-zinc-600 mt-1">Use the form to post updates to the citizen feed.</p>
+              <p className="font-bold">{t('no_updates')}</p>
             </div>
           ) : (
             posts.map((post) => (
@@ -140,7 +141,10 @@ export function AdminFeed() {
                         <User className="w-4.5 h-4.5" />
                       </div>
                       <div>
-                        <div className="text-xs font-black text-white">{post.adminName || 'MP Office'}</div>
+                        <div className="text-xs font-black text-white flex items-center gap-1.5">
+                          {post.adminName || 'MP Office'}
+                          <span className="bg-jan-coral/10 text-jan-coral text-[8px] font-black tracking-widest px-1.5 py-0.5 rounded uppercase">{t('official_tag')}</span>
+                        </div>
                         <div className="text-[9px] font-semibold text-zinc-500 flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
                           {new Date(post.timestamp).toLocaleString()}
@@ -179,3 +183,4 @@ export function AdminFeed() {
     </div>
   );
 }
+export default AdminFeed;

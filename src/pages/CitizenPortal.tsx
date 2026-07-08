@@ -79,7 +79,7 @@ export function CitizenPortal() {
                 currentTab === 'admin_feed' ? 'border-jan-coral text-slate-800' : 'border-transparent'
               }`}
             >
-              Admin Updates
+              {t('admin_updates')}
             </button>
             <button 
               onClick={() => setCurrentTab('profile')}

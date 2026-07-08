@@ -18,31 +18,30 @@ export function SortableComplaintCard({ complaint, onClick }: any) {
     : isMedium 
       ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20' 
       : 'bg-green-500/10 text-green-400 border border-green-500/20';
-
+ 
   const leftStripColor = isCritical 
     ? 'border-l-4 border-l-red-500' 
     : isMedium 
       ? 'border-l-4 border-l-orange-500' 
       : 'border-l-4 border-l-green-500';
-
+ 
   return (
     <div 
-      ref={setNodeRef} style={style} {...attributes} {...listeners}
-      onClick={() => onClick(complaint)} 
-      className={`bg-[#1a1f2c] p-4 rounded-xl border border-white/5 hover:border-white/10 hover:shadow-md cursor-grab active:cursor-grabbing mb-3 transition-all flex flex-col justify-between ${leftStripColor}`}
+      ref={setNodeRef} style={style}
+      className={`bg-[#1a1f2c] p-4 rounded-xl border border-white/5 hover:border-white/10 hover:shadow-md mb-3 transition-all flex flex-col justify-between relative group/card ${leftStripColor}`}
     >
-      <div>
+      <div onClick={() => onClick(complaint)} className="cursor-pointer flex-1 text-left">
         {/* Card Header (Priority Badge + ID) */}
-        <div className="flex justify-between items-center mb-3">
+        <div className="flex justify-between items-center mb-3 pr-6">
           <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full ${badgeColor}`}>
             {priorityLabel}
           </span>
           <span className="text-[9px] font-bold text-zinc-500">#JS-{complaint.id}</span>
         </div>
-
+ 
         {/* Title */}
         <h4 className="text-sm font-bold text-white tracking-tight leading-snug mb-1">
-          {complaint.category || 'Other'} Shortage
+          {complaint.category || 'Other'} Issue
         </h4>
         
         {/* Description */}
@@ -51,6 +50,15 @@ export function SortableComplaintCard({ complaint, onClick }: any) {
         </p>
       </div>
 
+      {/* Drag handle icon - top-right absolute */}
+      <div 
+        {...attributes} {...listeners}
+        className="absolute top-4 right-4 text-zinc-500 hover:text-white cursor-grab active:cursor-grabbing p-1 z-25 bg-black/20 rounded border border-white/5"
+        title="Drag to change status"
+      >
+        <span className="text-xs font-bold px-1 select-none">⠿</span>
+      </div>
+ 
       {/* Card Footer */}
       <div className="flex justify-between items-center pt-3 border-t border-white/5 mt-3">
         {/* Small avatar or mock tag */}

@@ -67,7 +67,7 @@ export function AdminPortal() {
                 activeTab === 'feed' ? 'border-jan-coral text-white' : 'border-transparent'
               }`}
             >
-              Admin Feed
+              {t('admin_feed')}
             </button>
           </nav>
         </div>

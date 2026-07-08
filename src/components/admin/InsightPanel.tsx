@@ -191,14 +191,14 @@ export function InsightPanel({ complaint, onClose, onStatusUpdate }: InsightPane
                 rel="noopener noreferrer" 
                 className="text-xs font-bold text-blue-400 underline hover:text-blue-300 ml-6 block"
               >
-                🔗 Open Google Doc Draft
+                {t('open_google_doc')}
               </a>
             </div>
           )}
 
           {/* Workflow Action Control Status Switchers */}
           <div className="border-t border-white/10 pt-4 mt-2 space-y-2.5 text-left">
-            <span className="text-[9px] font-black tracking-widest text-zinc-400 uppercase block mb-1">Workflow Action Control</span>
+            <span className="text-[9px] font-black tracking-widest text-zinc-400 uppercase block mb-1">{t('workflow_title')}</span>
             
             {(complaint.status || 'new') === 'new' && (
               <Button 
@@ -206,7 +206,7 @@ export function InsightPanel({ complaint, onClose, onStatusUpdate }: InsightPane
                 onClick={() => handleStatusTransition('under_review')}
                 disabled={updatingStatus}
               >
-                🔍 Pass for Review
+                {t('pass_review')}
               </Button>
             )}
 
@@ -217,14 +217,14 @@ export function InsightPanel({ complaint, onClose, onStatusUpdate }: InsightPane
                   onClick={() => handleStatusTransition('funds_allocated')}
                   disabled={updatingStatus}
                 >
-                  💰 Allocate Funds
+                  {t('allocate_funds')}
                 </Button>
                 <Button 
                   className="bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer text-xs transition-all active:scale-[0.98]"
                   onClick={() => handleStatusTransition('resolved')}
                   disabled={updatingStatus}
                 >
-                  ✅ Resolve Direct
+                  {t('resolve_direct')}
                 </Button>
               </div>
             )}
@@ -235,13 +235,13 @@ export function InsightPanel({ complaint, onClose, onStatusUpdate }: InsightPane
                 onClick={() => handleStatusTransition('resolved')}
                 disabled={updatingStatus}
               >
-                ✅ Resolve Issue
+                {t('resolve_issue')}
               </Button>
             )}
 
             {complaint.status === 'resolved' && (
               <div className="bg-emerald-950/40 border border-emerald-800 rounded-xl p-3 text-center">
-                <span className="text-xs text-emerald-400 font-bold">🎉 Issue is fully resolved & closed.</span>
+                <span className="text-xs text-emerald-400 font-bold">{t('resolved_closed')}</span>
               </div>
             )}
           </div>
