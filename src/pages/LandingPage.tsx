@@ -101,7 +101,7 @@ export function LandingPage() {
       <div 
         className="relative w-full h-[600px] bg-cover bg-center flex flex-col justify-between p-6 md:p-12 overflow-hidden shadow-lg"
         style={{ 
-          backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1600&auto=format&fit=crop')" 
+          backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url('/landing_hero.jpg')" 
         }}
       >
         {/* Transparent Header */}
