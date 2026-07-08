@@ -104,17 +104,14 @@ export function useRealtimeComplaints() {
     }, 1500);
 
     const unsubscribe = listenToComplaints((data) => {
-      if (!resolved) {
-        clearTimeout(timeout);
-        // If Firebase database is empty, seed it with mock complaints so it matches demo
-        if (data.length === 0) {
-          setComplaints(mockDemoComplaints);
-        } else {
-          setComplaints(data);
-        }
-        setLoading(false);
-        resolved = true;
+      clearTimeout(timeout);
+      if (data.length === 0) {
+        setComplaints(mockDemoComplaints);
+      } else {
+        setComplaints(data);
       }
+      setLoading(false);
+      resolved = true;
     });
     
     return () => {
