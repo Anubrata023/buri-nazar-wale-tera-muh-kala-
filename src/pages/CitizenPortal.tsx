@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { Bell, ArrowRight, GitCommit, FileSpreadsheet, MapPin, Languages } from 'lucide-react';
 import { ComplaintForm } from '../components/citizen/ComplaintForm';
 import { CommunityFeed } from '../components/citizen/CommunityFeed';
+import { AdminUpdatesFeed } from '../components/citizen/AdminUpdatesFeed';
 import { ComplaintMap } from '../components/shared/Map';
 import { useRealtimeComplaints } from '../hooks/useRealtime';
 import { useLanguage } from '../context/LanguageContext';
 
 export function CitizenPortal() {
   const { t, language, setLanguage } = useLanguage();
-  const [currentTab, setCurrentTab] = useState<'home' | 'reports' | 'community' | 'profile'>('home');
+  const [currentTab, setCurrentTab] = useState<'home' | 'reports' | 'community' | 'profile' | 'admin_feed'>('home');
   const { complaints } = useRealtimeComplaints();
   
   // Profile details load from storage or default
@@ -71,6 +72,14 @@ export function CitizenPortal() {
               }`}
             >
               {t('community')}
+            </button>
+            <button 
+              onClick={() => setCurrentTab('admin_feed')}
+              className={`pb-1 transition-colors cursor-pointer border-b-2 hover:text-slate-800 ${
+                currentTab === 'admin_feed' ? 'border-jan-coral text-slate-800' : 'border-transparent'
+              }`}
+            >
+              Admin Updates
             </button>
             <button 
               onClick={() => setCurrentTab('profile')}
@@ -142,6 +151,13 @@ export function CitizenPortal() {
         {currentTab === 'community' && (
           <div className="space-y-6 animate-fade-in">
             <CommunityFeed />
+          </div>
+        )}
+
+        {/* Admin Updates Tab */}
+        {currentTab === 'admin_feed' && (
+          <div className="space-y-6 animate-fade-in">
+            <AdminUpdatesFeed />
           </div>
         )}
 

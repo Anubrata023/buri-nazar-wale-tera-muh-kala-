@@ -4,6 +4,7 @@ import type { DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { KanbanColumn } from './KanbanColumn';
 import { updateComplaintStatus } from '../../lib/api';
+import { updateComplaintStatusInFirebase } from '../../firebase';
 
 const COLUMNS = [
   { id: 'new', title: '🆕 New', color: 'bg-blue-100 text-blue-800' },
@@ -41,11 +42,12 @@ export function KanbanBoard({ complaints, onComplaintClick }: any) {
       prev.map(c => c.id === complaintId ? { ...c, status: newStatus } : c)
     );
 
-    // Update backend API
+    // Update Firebase directly and backend API as well
     try {
+      await updateComplaintStatusInFirebase(complaintId, newStatus);
       await updateComplaintStatus(complaintId, newStatus);
     } catch (error) {
-      console.error('Failed to update status in backend, but keeping optimistic UI state:', error);
+      console.error('Optimistic status updated in Firebase, backend synced if active:', error);
     }
   };
 

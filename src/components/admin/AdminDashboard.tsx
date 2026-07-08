@@ -111,6 +111,11 @@ export function AdminDashboard() {
           <InsightPanel 
             complaint={selectedComplaint} 
             onClose={() => setSelectedComplaint(null)} 
+            onStatusUpdate={(complaintId, newStatus) => {
+              setSelectedComplaint((prev: any) => 
+                prev && prev.id === complaintId ? { ...prev, status: newStatus } : prev
+              );
+            }}
           />
         )}
       </div>

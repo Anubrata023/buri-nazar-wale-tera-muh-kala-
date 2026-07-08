@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { Bell, Settings, Languages } from 'lucide-react';
 import { AdminDashboard } from '../components/admin/AdminDashboard';
 import { AIInsightsPanel } from '../components/admin/AIInsightsPanel';
+import { AdminFeed } from '../components/admin/AdminFeed';
 import { ComplaintMap } from '../components/shared/Map';
 import { useRealtimeComplaints } from '../hooks/useRealtime';
 import { useLanguage } from '../context/LanguageContext';
 
 export function AdminPortal() {
   const { t, language, setLanguage } = useLanguage();
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'geospatial' | 'insights' | 'audit'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'geospatial' | 'insights' | 'audit' | 'feed'>('dashboard');
   const { complaints } = useRealtimeComplaints();
 
   const handleDraftProposalAll = () => {
@@ -56,6 +57,14 @@ export function AdminPortal() {
               }`}
             >
               {t('audit')}
+            </button>
+            <button 
+              onClick={() => setActiveTab('feed')}
+              className={`pb-1 transition-colors cursor-pointer border-b-2 hover:text-white ${
+                activeTab === 'feed' ? 'border-jan-coral text-white' : 'border-transparent'
+              }`}
+            >
+              Admin Feed
             </button>
           </nav>
         </div>
@@ -148,6 +157,12 @@ export function AdminPortal() {
               <span className="text-red-400">GAP DETECTED</span>
             </div>
           </div>
+        </div>
+      )}
+
+      {activeTab === 'feed' && (
+        <div className="animate-fade-in">
+          <AdminFeed />
         </div>
       )}
     </div>
