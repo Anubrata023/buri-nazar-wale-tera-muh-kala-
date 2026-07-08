@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bell, Settings, Languages } from 'lucide-react';
 import { AdminDashboard } from '../components/admin/AdminDashboard';
+import { AIInsightsPanel } from '../components/admin/AIInsightsPanel';
 import { ComplaintMap } from '../components/shared/Map';
 import { useRealtimeComplaints } from '../hooks/useRealtime';
 import { useLanguage } from '../context/LanguageContext';
@@ -127,31 +128,38 @@ export function AdminPortal() {
       )}
 
       {activeTab === 'insights' && (
-        <div className="bg-[#141b2b] border border-white/5 rounded-3xl p-8 text-center max-w-xl mx-auto shadow-lg mt-12 animate-fade-in">
-          <span className="text-4xl block mb-4">🧠</span>
-          <h3 className="text-lg font-black text-white mb-2">{t('command_insight')}</h3>
-          <p className="text-xs text-zinc-400 leading-relaxed font-bold">
-            Forecasting models predict a 60% increase in sanitation and drainage complaints across Ward 12 (Chinhat) due to seasonal rainfall forecasts. LADS allocations are advised pre-emptively.
-          </p>
+        <div className="animate-fade-in">
+          <AIInsightsPanel />
         </div>
       )}
 
       {activeTab === 'audit' && (
-        <div className="bg-[#141b2b] border border-white/5 rounded-3xl p-8 max-w-2xl mx-auto shadow-lg mt-12 animate-fade-in">
-          <h3 className="text-lg font-black text-white mb-4">{t('audit')}</h3>
-          <div className="space-y-4 text-xs font-semibold text-zinc-400">
-            <div className="p-3 bg-black/30 rounded-xl border border-white/5 flex justify-between">
-              <span>[06:21:49] AI Triage complete on raw input. Category: Water, Severity: 8/10.</span>
-              <span className="text-green-400">VERIFIED</span>
-            </div>
-            <div className="p-3 bg-black/30 rounded-xl border border-white/5 flex justify-between">
-              <span>[06:21:50] Geospatial duplicate index matching similarity computed: 0.88. Issue merged.</span>
-              <span className="text-amber-400">MERGED</span>
-            </div>
-            <div className="p-3 bg-black/30 rounded-xl border border-white/5 flex justify-between">
-              <span>[06:21:51] Overpass school gap check returned 0 schools in 3km radius. Gap confirmed.</span>
-              <span className="text-red-400">GAP DETECTED</span>
-            </div>
+        <div className="bg-[#141b2b] border border-white/5 rounded-3xl p-8 max-w-4xl mx-auto shadow-lg mt-4 animate-fade-in">
+          <h3 className="text-lg font-black text-white mb-1">{t('audit')}</h3>
+          <p className="text-xs text-zinc-500 mb-6 font-semibold">Immutable AI decision log — every action recorded with timestamp and verification status</p>
+          <div className="space-y-3 text-xs font-semibold text-zinc-400 max-h-[60vh] overflow-y-auto pr-2">
+            {complaints.slice(0, 20).map((c, i) => (
+              <div key={i} className="p-3 bg-black/30 rounded-xl border border-white/5 flex flex-col sm:flex-row sm:justify-between gap-2">
+                <div>
+                  <span className="text-zinc-600">[{new Date(c.timestamp || Date.now()).toLocaleTimeString('en-IN')}]</span>{' '}
+                  AI triage complete · Category: <span className="text-white font-bold">{c.category || 'General'}</span>
+                  {c.ward ? ` · Ward: ${c.ward}` : ''}
+                  {c.priority_score ? ` · Priority Score: ${Math.round(c.priority_score)}/100` : ''}
+                </div>
+                <span className={`font-black flex-shrink-0 ${
+                  c.status === 'resolved' ? 'text-emerald-400' :
+                  c.status === 'under_review' ? 'text-amber-400' :
+                  c.status === 'funds_allocated' ? 'text-purple-400' :
+                  'text-zinc-500'
+                }`}>{(c.status || 'NEW').toUpperCase().replace('_', ' ')}</span>
+              </div>
+            ))}
+            {complaints.length === 0 && (
+              <div className="p-3 bg-black/30 rounded-xl border border-white/5 flex justify-between">
+                <span>[{new Date().toLocaleTimeString('en-IN')}] AI Triage Engine active — awaiting complaint submissions.</span>
+                <span className="text-green-400">READY</span>
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -1,0 +1,32 @@
+{
+  "name": "JanSaath — Citizen Grievance Platform",
+  "short_name": "JanSaath",
+  "description": "AI-powered citizen grievance platform for MPs and local authorities",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#06080f",
+  "theme_color": "#e84040",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["government", "utilities", "social"],
+  "lang": "en-IN",
+  "shortcuts": [
+    {
+      "name": "File a Complaint",
+      "url": "/citizen",
+      "description": "Submit a new civic complaint"
+    },
+    {
+      "name": "Public Transparency",
+      "url": "/public",
+      "description": "View the public grievance feed"
+    }
+  ]
+}
