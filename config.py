@@ -5,7 +5,7 @@ load_dotenv()
 
 class Config:
     # Gemini
-    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY_ALT") or os.getenv("GEMINI_API_KEY_NEW") or os.getenv("GEMINI_API_KEY_HACKATHON") or os.getenv("GEMINI_API_KEY")
     
     # Supabase
     SUPABASE_URL = os.getenv("SUPABASE_URL")

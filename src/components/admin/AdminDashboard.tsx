@@ -15,17 +15,26 @@ export function AdminDashboard() {
     resolved: 0,
     avgResolution: '0.0d',
     satisfaction: '100%',
+    resolvedRate: 0,
+    newRate: 0,
+    totalUpvotes: 0,
   });
 
   useEffect(() => {
     const total = complaints.length;
     const resolvedList = complaints.filter(c => c.status === 'resolved');
     const resolvedCount = resolvedList.length;
+    const newCount = complaints.filter(c => c.status === 'new').length;
+    const totalUpvotes = complaints.reduce((acc, c) => acc + (c.upvotes || 0), 0);
     
     // Calculate satisfaction based on upvote engagement (positive if upvotes >= 2)
     const positiveCount = complaints.filter(c => (c.upvotes || 0) >= 2 || c.status === 'resolved').length;
     const satisfactionRate = total > 0 ? Math.round((positiveCount / total) * 100) : 100;
     
+    // Percentages
+    const resolvedRate = total > 0 ? Math.round((resolvedCount / total) * 100) : 0;
+    const newRate = total > 0 ? Math.round((newCount / total) * 100) : 0;
+
     // Calculate average resolution time dynamically
     let avgResText = '2.5d';
     if (resolvedCount > 0) {
@@ -45,6 +54,9 @@ export function AdminDashboard() {
       resolved: resolvedCount,
       avgResolution: avgResText,
       satisfaction: `${satisfactionRate}%`,
+      resolvedRate,
+      newRate,
+      totalUpvotes,
     });
   }, [complaints]);
 
@@ -69,7 +81,7 @@ export function AdminDashboard() {
             </div>
             <div className="flex items-end justify-between">
               <h2 className="text-3xl font-black text-white leading-none">{stats.total.toLocaleString()}</h2>
-              <span className="text-[10px] font-black text-jan-coral mb-0.5">~12%</span>
+              <span className="text-[10px] font-black text-jan-coral mb-0.5">{stats.newRate}% new</span>
             </div>
           </CardContent>
         </Card>
@@ -83,7 +95,7 @@ export function AdminDashboard() {
             </div>
             <div className="flex items-end justify-between">
               <h2 className="text-3xl font-black text-white leading-none">{stats.resolved.toLocaleString()}</h2>
-              <span className="text-[10px] font-black text-emerald-400 mb-0.5">✔ 67%</span>
+              <span className="text-[10px] font-black text-emerald-400 mb-0.5">✔ {stats.resolvedRate}%</span>
             </div>
           </CardContent>
         </Card>
@@ -97,7 +109,7 @@ export function AdminDashboard() {
             </div>
             <div className="flex items-end justify-between">
               <h2 className="text-3xl font-black text-white leading-none">{stats.avgResolution}</h2>
-              <span className="text-[10px] font-black text-zinc-400 mb-0.5">⏱ -1.5h</span>
+              <span className="text-[10px] font-black text-zinc-400 mb-0.5">⏱ target &lt;4d</span>
             </div>
           </CardContent>
         </Card>
@@ -111,7 +123,7 @@ export function AdminDashboard() {
             </div>
             <div className="flex items-end justify-between">
               <h2 className="text-3xl font-black text-white leading-none">{stats.satisfaction}</h2>
-              <span className="text-[10px] font-black text-jan-coral mb-0.5">☺ +4%</span>
+              <span className="text-[10px] font-black text-jan-coral mb-0.5">👍 {stats.totalUpvotes} votes</span>
             </div>
           </CardContent>
         </Card>
