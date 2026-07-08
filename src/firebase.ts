@@ -57,6 +57,7 @@ export const addComplaintToFeed = async (complaint: any) => {
   const localList = getLocalData('local_complaints');
   localList.push(localComplaint);
   saveLocalData('local_complaints', localList);
+  notifyComplaintListeners();
 
   // 2. Try Firebase write
   if (db) {
@@ -75,47 +76,64 @@ export const addComplaintToFeed = async (complaint: any) => {
 };
 
 // Helper: Listen to complaints in real-time
-export const listenToComplaints = (callback: (data: any[]) => void) => {
-  // Load and merge local storage complaints immediately
-  const getMergedComplaints = (firebaseData: any[] = []) => {
-    const localList = getLocalData('local_complaints');
-    const statusOverrides = getLocalData('complaints_status_overrides');
-    const upvoteOverrides = getLocalData('complaints_upvote_overrides');
-    
-    // Map of id -> status
-    const statusMap = new Map(statusOverrides.map(item => [item.id, item.status]));
-    // Map of id -> upvote count
-    const upvoteMap = new Map(upvoteOverrides.map(item => [item.id, item.count]));
+const activeComplaintListeners = new Set<(data: any[]) => void>();
+let latestFirebaseComplaints: any[] = [];
 
-    const merged = [...firebaseData, ...localList];
-    const uniqueMap = new Map<string, any>();
+const getMergedComplaints = (firebaseData: any[] = []) => {
+  const localList = getLocalData('local_complaints');
+  const statusOverrides = getLocalData('complaints_status_overrides');
+  const upvoteOverrides = getLocalData('complaints_upvote_overrides');
+  
+  // Map of id -> status
+  const statusMap = new Map(statusOverrides.map(item => [item.id, item.status]));
+  // Map of id -> upvote count
+  const upvoteMap = new Map(upvoteOverrides.map(item => [item.id, item.count]));
 
-    merged.forEach(c => {
-      if (c && c.id) {
-        const copy = { ...c };
-        // Apply local status and upvote overrides if present
-        if (statusMap.has(copy.id)) {
-          copy.status = statusMap.get(copy.id);
-        }
-        if (upvoteMap.has(copy.id)) {
-          copy.upvotes = upvoteMap.get(copy.id);
-        }
-        uniqueMap.set(copy.id, copy);
+  const merged = [...firebaseData, ...localList];
+  const uniqueMap = new Map<string, any>();
+
+  merged.forEach(c => {
+    if (c && c.id) {
+      const copy = { ...c };
+      // Apply local status and upvote overrides if present
+      if (statusMap.has(copy.id)) {
+        copy.status = statusMap.get(copy.id);
       }
-    });
+      if (upvoteMap.has(copy.id)) {
+        copy.upvotes = upvoteMap.get(copy.id);
+      }
+      uniqueMap.set(copy.id, copy);
+    }
+  });
 
-    return Array.from(uniqueMap.values());
-  };
+  return Array.from(uniqueMap.values());
+};
 
+const notifyComplaintListeners = () => {
+  const merged = getMergedComplaints(latestFirebaseComplaints);
+  activeComplaintListeners.forEach(cb => {
+    try {
+      cb(merged);
+    } catch (e) {
+      console.error("Error invoking real-time callback listener:", e);
+    }
+  });
+};
+
+export const listenToComplaints = (callback: (data: any[]) => void) => {
+  activeComplaintListeners.add(callback);
+  
   // Return local cache immediately
-  callback(getMergedComplaints([]));
+  callback(getMergedComplaints(latestFirebaseComplaints));
 
   if (!db) {
-    return () => {};
+    return () => {
+      activeComplaintListeners.delete(callback);
+    };
   }
 
   const complaintsRef = ref(db, 'complaints');
-  return onValue(complaintsRef, (snapshot) => {
+  const unsubscribe = onValue(complaintsRef, (snapshot) => {
     const data = snapshot.val();
     let fbComplaints: any[] = [];
     if (data) {
@@ -124,11 +142,17 @@ export const listenToComplaints = (callback: (data: any[]) => void) => {
         ...value
       }));
     }
-    callback(getMergedComplaints(fbComplaints));
+    latestFirebaseComplaints = fbComplaints;
+    notifyComplaintListeners();
   }, (err) => {
     console.warn("Firebase listener error, using local storage database:", err);
-    callback(getMergedComplaints([]));
+    notifyComplaintListeners();
   });
+
+  return () => {
+    activeComplaintListeners.delete(callback);
+    unsubscribe();
+  };
 };
 
 // Helper: Upvote a complaint (atomic increment)
@@ -143,6 +167,7 @@ export const upvoteComplaint = async (complaintId: string) => {
     upvoteOverrides.push({ id: complaintId, count: 125 }); // start from baseline upvotes
   }
   saveLocalData('complaints_upvote_overrides', upvoteOverrides);
+  notifyComplaintListeners();
 
   // 2. Try Firebase update
   if (db) {
@@ -176,6 +201,8 @@ export const updateComplaintStatusInFirebase = async (complaintId: string, newSt
     localList[index].status = newStatus;
     saveLocalData('local_complaints', localList);
   }
+  
+  notifyComplaintListeners();
 
   // 2. Try Firebase update
   if (db) {
