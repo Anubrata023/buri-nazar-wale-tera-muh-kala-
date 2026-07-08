@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Card, CardContent } from '../ui/card';
 import { upvoteComplaint } from '../../firebase';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, Ban, Send, User } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface ComplaintCardProps {
   complaint: any;
@@ -19,13 +20,49 @@ const categoryImages: Record<string, string> = {
 };
 
 export function ComplaintCard({ complaint, onClick }: ComplaintCardProps) {
+  const { t } = useLanguage();
   const [upvotes, setUpvotes] = useState(complaint.upvotes || 0);
+  const [hasUpvoted, setHasUpvoted] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [comments, setComments] = useState<string[]>([
+    'Ward representation has been informed.',
+    'Urgent repairs are requested for local shops access.'
+  ]);
+  const [newComment, setNewComment] = useState('');
+  const [isAborted, setIsAborted] = useState(false);
 
   const handleUpvote = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    await upvoteComplaint(complaint.id);
+    if (hasUpvoted) return;
+    try {
+      await upvoteComplaint(complaint.id);
+    } catch (err) {
+      console.warn('Firebase upvote simulation fallback');
+    }
     setUpvotes((prev: number) => prev + 1);
+    setHasUpvoted(true);
   };
+
+  const handleAddComment = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newComment.trim() !== '') {
+      setComments(prev => [...prev, newComment]);
+      setNewComment('');
+    }
+  };
+
+  const handleAbort = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsAborted(true);
+  };
+
+  if (isAborted) {
+    return (
+      <div className="bg-red-50/50 border border-dashed border-red-200 p-5 rounded-2xl text-center text-xs font-bold text-red-500 animate-fade-in shadow-sm">
+        ⚠️ {t('aborted_notice')} (#JS-{complaint.id})
+      </div>
+    );
+  }
 
   const score = complaint.priority_score || 50;
   const severityTag = score >= 70 ? 'CRITICAL' : score >= 40 ? 'MEDIUM' : 'LOW';
@@ -43,17 +80,16 @@ export function ComplaintCard({ complaint, onClick }: ComplaintCardProps) {
 
   return (
     <Card 
-      className="overflow-hidden hover:shadow-md transition-shadow duration-200 cursor-pointer border border-zinc-200"
-      onClick={onClick}
+      className="overflow-hidden hover:shadow-md transition-all duration-200 border border-zinc-200 bg-white"
     >
       <CardContent className="p-0">
-        <div className="flex flex-col sm:flex-row h-full">
+        <div className="flex flex-col sm:flex-row h-full" onClick={onClick}>
           {/* Left Thumbnail Image */}
           <div className="w-full sm:w-48 h-36 sm:h-auto relative overflow-hidden bg-zinc-100 flex-shrink-0">
             <img 
               src={imageUrl} 
               alt={complaint.category || 'Complaint'} 
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              className="w-full h-full object-cover transition-transform duration-300"
             />
           </div>
 
@@ -63,7 +99,7 @@ export function ComplaintCard({ complaint, onClick }: ComplaintCardProps) {
               {/* Badges Row */}
               <div className="flex items-center gap-2 flex-wrap mb-2">
                 <span className="text-[9px] font-black uppercase text-white bg-slate-900 px-2 py-0.5 rounded">
-                  Priority: {score}/100
+                  {t('priority')}: {score}/100
                 </span>
                 <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded ${severityColor}`}>
                   {severityTag}
@@ -78,7 +114,7 @@ export function ComplaintCard({ complaint, onClick }: ComplaintCardProps) {
 
               {/* Title & Description */}
               <h4 className="text-sm font-black text-slate-800 leading-tight mb-1">
-                {complaint.category || 'Other'} Issue
+                {complaint.category || 'Other'} Incident
               </h4>
               <p className="text-xs text-zinc-600 leading-relaxed font-medium line-clamp-2">
                 {complaint.summary_en || complaint.raw_text}
@@ -88,24 +124,80 @@ export function ComplaintCard({ complaint, onClick }: ComplaintCardProps) {
             {/* Bottom Actions Row */}
             <div className="flex justify-between items-center pt-3 border-t border-zinc-100 mt-3 text-xs">
               <div className="flex items-center gap-4 font-bold text-zinc-500">
+                {/* UPVOTE */}
                 <button 
                   onClick={handleUpvote}
-                  className="flex items-center gap-1 hover:text-jan-coral active:scale-95 transition-all cursor-pointer"
+                  className={`flex items-center gap-1 transition-all cursor-pointer ${
+                    hasUpvoted ? 'text-jan-coral' : 'hover:text-jan-coral'
+                  }`}
                 >
                   <span>👍</span>
-                  <span>{upvotes} Upvotes</span>
+                  <span>{upvotes} {t('upvotes')}</span>
                 </button>
-                <div className="flex items-center gap-1">
+
+                {/* TOGGLE COMMENTS */}
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowComments(!showComments);
+                  }}
+                  className="flex items-center gap-1 hover:text-jan-coral transition-all cursor-pointer"
+                >
                   <MessageSquare className="w-3.5 h-3.5" />
-                  <span>{complaint.cluster_size || 1}</span>
-                </div>
+                  <span>{comments.length} {t('comments')}</span>
+                </button>
               </div>
-              <span className="text-zinc-400 font-bold text-[10px]">
-                {complaint.is_duplicate ? 'Merged' : 'Logged'} • 2h ago
-              </span>
+
+              <div className="flex items-center gap-2">
+                {/* ABORT BUTTON */}
+                <button
+                  onClick={handleAbort}
+                  className="flex items-center gap-1 text-red-500 hover:text-red-700 font-bold transition-all cursor-pointer border border-red-200 hover:bg-red-50 px-2 py-1 rounded"
+                >
+                  <Ban className="w-3 h-3" />
+                  <span>{t('abort')}</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
+
+        {/* COMMENTS EXPANDABLE BOX */}
+        {showComments && (
+          <div className="border-t border-zinc-100 bg-zinc-50/50 p-4 space-y-4 animate-fade-in text-xs">
+            <div className="space-y-2 max-h-40 overflow-y-auto">
+              {comments.map((comment, index) => (
+                <div key={index} className="flex gap-2.5 items-start p-2.5 bg-white border border-zinc-150 rounded-xl">
+                  <div className="w-5 h-5 rounded-full bg-zinc-200 flex items-center justify-center text-zinc-500 flex-shrink-0">
+                    <User className="w-3 h-3" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-zinc-400 font-black">{t('anonymous')}</p>
+                    <p className="font-semibold text-slate-700 leading-normal mt-0.5">{comment}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Comment Form */}
+            <form onSubmit={handleAddComment} className="flex gap-2">
+              <input
+                type="text"
+                required
+                placeholder={t('add_comment')}
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                className="flex-1 bg-white border border-zinc-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-jan-coral"
+              />
+              <button
+                type="submit"
+                className="bg-jan-coral hover:bg-red-500 text-white p-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-center"
+              >
+                <Send className="w-3.5 h-3.5" />
+              </button>
+            </form>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

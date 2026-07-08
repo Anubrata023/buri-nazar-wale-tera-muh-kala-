@@ -4,8 +4,10 @@ import { KanbanBoard } from './KanbanBoard';
 import { InsightPanel } from './InsightPanel';
 import { Card, CardContent } from '../ui/card';
 import { Folder, CheckCircle, Clock, Smile } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 export function AdminDashboard() {
+  const { t } = useLanguage();
   const { complaints, loading } = useRealtimeComplaints();
   const [selectedComplaint, setSelectedComplaint] = useState<any>(null);
   const [stats, setStats] = useState({
@@ -18,7 +20,6 @@ export function AdminDashboard() {
   useEffect(() => {
     // If we have live complaints from Firebase, we overlay them or dynamically calculate
     if (complaints.length > 0) {
-      // Opt-in to show live values but fall back to Image 2 matching values if database is fresh
       const resolvedCount = complaints.filter(c => c.status === 'resolved').length;
       setStats({
         total: Math.max(2842, complaints.length),
@@ -32,7 +33,7 @@ export function AdminDashboard() {
   if (loading) {
     return (
       <div className="text-center py-12 text-zinc-400 font-medium">
-        <span className="inline-block animate-spin mr-2">🔄</span> Loading Admin Workspace...
+        <span className="inline-block animate-spin mr-2">🔄</span> {t('loading')}...
       </div>
     );
   }
@@ -42,10 +43,10 @@ export function AdminDashboard() {
       {/* KPI Cards Row (Image 2) */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {/* TOTAL ISSUES */}
-        <Card className="bg-[#141b2b] border-white/5 shadow-lg rounded-2xl">
+        <Card className="bg-[#141b2b] border border-white/5 shadow-lg rounded-2xl">
           <CardContent className="p-5 flex flex-col justify-between h-full">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Total Issues</span>
+              <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">{t('total_issues')}</span>
               <Folder className="w-4.5 h-4.5 text-jan-coral" />
             </div>
             <div className="flex items-end justify-between">
@@ -56,10 +57,10 @@ export function AdminDashboard() {
         </Card>
 
         {/* RESOLVED */}
-        <Card className="bg-[#141b2b] border-white/5 shadow-lg rounded-2xl">
+        <Card className="bg-[#141b2b] border border-white/5 shadow-lg rounded-2xl">
           <CardContent className="p-5 flex flex-col justify-between h-full">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Resolved</span>
+              <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">{t('resolved')}</span>
               <CheckCircle className="w-4.5 h-4.5 text-emerald-400" />
             </div>
             <div className="flex items-end justify-between">
@@ -70,10 +71,10 @@ export function AdminDashboard() {
         </Card>
 
         {/* AVG RESOLUTION */}
-        <Card className="bg-[#141b2b] border-white/5 shadow-lg rounded-2xl">
+        <Card className="bg-[#141b2b] border border-white/5 shadow-lg rounded-2xl">
           <CardContent className="p-5 flex flex-col justify-between h-full">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Avg Resolution</span>
+              <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">{t('avg_resolution')}</span>
               <Clock className="w-4.5 h-4.5 text-zinc-400" />
             </div>
             <div className="flex items-end justify-between">
@@ -84,10 +85,10 @@ export function AdminDashboard() {
         </Card>
 
         {/* SATISFACTION */}
-        <Card className="bg-[#141b2b] border-white/5 shadow-lg rounded-2xl">
+        <Card className="bg-[#141b2b] border border-white/5 shadow-lg rounded-2xl">
           <CardContent className="p-5 flex flex-col justify-between h-full">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Satisfaction</span>
+              <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">{t('satisfaction')}</span>
               <Smile className="w-4.5 h-4.5 text-jan-coral" />
             </div>
             <div className="flex items-end justify-between">

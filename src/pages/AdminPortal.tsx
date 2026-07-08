@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { Bell, Settings } from 'lucide-react';
+import { Bell, Settings, Languages } from 'lucide-react';
 import { AdminDashboard } from '../components/admin/AdminDashboard';
 import { ComplaintMap } from '../components/shared/Map';
 import { useRealtimeComplaints } from '../hooks/useRealtime';
+import { useLanguage } from '../context/LanguageContext';
 
 export function AdminPortal() {
+  const { t, language, setLanguage } = useLanguage();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'geospatial' | 'insights' | 'audit'>('dashboard');
   const { complaints } = useRealtimeComplaints();
 
@@ -28,7 +30,7 @@ export function AdminPortal() {
                 activeTab === 'dashboard' ? 'border-jan-coral text-white' : 'border-transparent'
               }`}
             >
-              Dashboard
+              {t('dashboard')}
             </button>
             <button 
               onClick={() => setActiveTab('geospatial')}
@@ -36,7 +38,7 @@ export function AdminPortal() {
                 activeTab === 'geospatial' ? 'border-jan-coral text-white' : 'border-transparent'
               }`}
             >
-              Geospatial
+              {t('geospatial')}
             </button>
             <button 
               onClick={() => setActiveTab('insights')}
@@ -44,7 +46,7 @@ export function AdminPortal() {
                 activeTab === 'insights' ? 'border-jan-coral text-white' : 'border-transparent'
               }`}
             >
-              AI Insights
+              {t('insights')}
             </button>
             <button 
               onClick={() => setActiveTab('audit')}
@@ -52,7 +54,7 @@ export function AdminPortal() {
                 activeTab === 'audit' ? 'border-jan-coral text-white' : 'border-transparent'
               }`}
             >
-              Audit Log
+              {t('audit')}
             </button>
           </nav>
         </div>
@@ -67,6 +69,24 @@ export function AdminPortal() {
             <a href="/public" className="hover:text-white transition-colors">Public</a>
           </div>
 
+          {/* Language Selector inside Admin Portal */}
+          <div className="relative group bg-white/5 border border-white/10 rounded-full px-3 py-1.5 flex items-center gap-1.5 cursor-pointer text-white">
+            <Languages className="w-3.5 h-3.5 text-jan-coral" />
+            <select 
+              value={language}
+              onChange={(e) => setLanguage(e.target.value as any)}
+              className="bg-transparent text-[10px] font-bold focus:outline-none cursor-pointer border-none text-white appearance-none"
+              style={{ WebkitAppearance: 'none' }}
+            >
+              <option value="en" className="text-slate-800 font-bold">English</option>
+              <option value="hi" className="text-slate-800 font-bold">हिंदी (Hindi)</option>
+              <option value="bn" className="text-slate-800 font-bold">বাংলা (Bengali)</option>
+              <option value="ta" className="text-slate-800 font-bold">தமிழ் (Tamil)</option>
+              <option value="te" className="text-slate-800 font-bold">తెలుగు (Telugu)</option>
+              <option value="mr" className="text-slate-800 font-bold">मराठी (Marathi)</option>
+            </select>
+          </div>
+
           <button className="p-2 hover:bg-white/10 rounded-full text-zinc-400 hover:text-white transition-colors cursor-pointer">
             <Bell className="w-4 h-4" />
           </button>
@@ -78,7 +98,7 @@ export function AdminPortal() {
             onClick={handleDraftProposalAll}
             className="bg-jan-coral hover:bg-red-500 text-white font-black text-xs px-4 py-2 rounded-xl transition-all shadow-md shadow-jan-coral/20 cursor-pointer"
           >
-            DRAFT OFFICIAL PROPOSAL
+            {t('draft_proposal')}
           </button>
 
           <div className="w-8 h-8 rounded-full bg-jan-coral border-2 border-white/20 flex items-center justify-center font-black text-xs text-white">
@@ -96,8 +116,8 @@ export function AdminPortal() {
 
       {activeTab === 'geospatial' && (
         <div className="bg-[#141b2b] border border-white/5 rounded-3xl p-6 shadow-lg animate-fade-in">
-          <h2 className="text-lg font-black tracking-tight text-white mb-2">📌 Regional Geospatial Mapping</h2>
-          <p className="text-xs text-zinc-400 mb-6">Comprehensive spatial live view showing complaint clusters and ward density markers.</p>
+          <h2 className="text-lg font-black tracking-tight text-white mb-2">📌 {t('active_hotspots')}</h2>
+          <p className="text-xs text-zinc-400 mb-6">{t('map_desc')}</p>
           <div className="rounded-2xl overflow-hidden border border-white/5 shadow-inner">
             <ComplaintMap complaints={complaints} />
           </div>
@@ -107,8 +127,8 @@ export function AdminPortal() {
       {activeTab === 'insights' && (
         <div className="bg-[#141b2b] border border-white/5 rounded-3xl p-8 text-center max-w-xl mx-auto shadow-lg mt-12 animate-fade-in">
           <span className="text-4xl block mb-4">🧠</span>
-          <h3 className="text-lg font-black text-white mb-2">Constituency Predictive Insights</h3>
-          <p className="text-xs text-zinc-400 leading-relaxed">
+          <h3 className="text-lg font-black text-white mb-2">{t('command_insight')}</h3>
+          <p className="text-xs text-zinc-400 leading-relaxed font-bold">
             Forecasting models predict a 60% increase in sanitation and drainage complaints across Ward 12 (Chinhat) due to seasonal rainfall forecasts. LADS allocations are advised pre-emptively.
           </p>
         </div>
@@ -116,8 +136,8 @@ export function AdminPortal() {
 
       {activeTab === 'audit' && (
         <div className="bg-[#141b2b] border border-white/5 rounded-3xl p-8 max-w-2xl mx-auto shadow-lg mt-12 animate-fade-in">
-          <h3 className="text-lg font-black text-white mb-4">AI Audit Trail Log</h3>
-          <div className="space-y-4 text-xs font-medium text-zinc-400">
+          <h3 className="text-lg font-black text-white mb-4">{t('audit')}</h3>
+          <div className="space-y-4 text-xs font-semibold text-zinc-400">
             <div className="p-3 bg-black/30 rounded-xl border border-white/5 flex justify-between">
               <span>[06:21:49] AI Triage complete on raw input. Category: Water, Severity: 8/10.</span>
               <span className="text-green-400">VERIFIED</span>

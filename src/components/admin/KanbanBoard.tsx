@@ -24,11 +24,16 @@ export function KanbanBoard({ complaints, onComplaintClick }: any) {
     if (!over) return;
 
     const complaintId = active.id as string;
-    const newStatus = over.id as string;
+    let newStatus = over.id as string;
 
-    // Verify it is a valid column target
+    // Resolve column ID if dropped over another complaint card
     if (!COLUMNS.map(c => c.id).includes(newStatus)) {
-      return;
+      const targetComplaint = items.find(c => c.id === newStatus);
+      if (targetComplaint) {
+        newStatus = targetComplaint.status || 'new';
+      } else {
+        return;
+      }
     }
 
     // Update local state temporarily

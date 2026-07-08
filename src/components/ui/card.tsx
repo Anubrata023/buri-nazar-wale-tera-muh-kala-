@@ -1,9 +1,11 @@
 import React from 'react';
 
 export function Card({ className = '', ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  const hasBg = className.includes('bg-');
+  const hasBorder = className.includes('border-');
   return (
     <div
-      className={`rounded-2xl border border-zinc-200 bg-white shadow-sm transition-all ${className}`}
+      className={`rounded-2xl ${hasBorder ? '' : 'border border-zinc-200'} ${hasBg ? '' : 'bg-white'} shadow-sm transition-all ${className}`}
       {...props}
     />
   );
