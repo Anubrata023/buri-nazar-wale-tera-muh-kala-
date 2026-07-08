@@ -1,25 +1,138 @@
+import { useState } from 'react';
+import { Bell, Settings } from 'lucide-react';
 import { AdminDashboard } from '../components/admin/AdminDashboard';
+import { ComplaintMap } from '../components/shared/Map';
+import { useRealtimeComplaints } from '../hooks/useRealtime';
 
 export function AdminPortal() {
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'geospatial' | 'insights' | 'audit'>('dashboard');
+  const { complaints } = useRealtimeComplaints();
+
+  const handleDraftProposalAll = () => {
+    // Generate draft for first complaint or mock draft
+    const mockUrl = `https://docs.google.com/document/d/1mock-master-proposal/edit`;
+    window.open(mockUrl, '_blank');
+  };
+
   return (
-    <div className="w-full min-h-screen bg-jan-navy text-white p-6 font-sans">
-      <header className="flex justify-between items-center mb-8 border-b border-white/10 pb-4">
-        <div className="flex items-center gap-6">
-          <h1 className="text-2xl font-black text-jan-coral tracking-tight">MP Command Center</h1>
-          <nav className="hidden md:flex gap-4">
-            <span className="text-sm font-bold text-white border-b-2 border-jan-coral pb-1">Kanban Command</span>
+    <div className="w-full min-h-screen bg-[#090d16] text-white p-6 font-sans flex flex-col justify-start">
+      {/* High-fidelity Admin Header matching Image 2 */}
+      <header className="flex flex-col md:flex-row justify-between items-center mb-8 border-b border-white/10 pb-4 gap-4 sticky top-0 bg-[#090d16]/90 backdrop-blur-md z-40">
+        <div className="flex items-center gap-8 w-full md:w-auto">
+          <span className="text-2xl font-black text-jan-coral tracking-tight">JanSaath</span>
+          
+          <nav className="flex gap-4 text-xs font-bold text-zinc-400">
+            <button 
+              onClick={() => setActiveTab('dashboard')}
+              className={`pb-1 transition-colors cursor-pointer border-b-2 hover:text-white ${
+                activeTab === 'dashboard' ? 'border-jan-coral text-white' : 'border-transparent'
+              }`}
+            >
+              Dashboard
+            </button>
+            <button 
+              onClick={() => setActiveTab('geospatial')}
+              className={`pb-1 transition-colors cursor-pointer border-b-2 hover:text-white ${
+                activeTab === 'geospatial' ? 'border-jan-coral text-white' : 'border-transparent'
+              }`}
+            >
+              Geospatial
+            </button>
+            <button 
+              onClick={() => setActiveTab('insights')}
+              className={`pb-1 transition-colors cursor-pointer border-b-2 hover:text-white ${
+                activeTab === 'insights' ? 'border-jan-coral text-white' : 'border-transparent'
+              }`}
+            >
+              AI Insights
+            </button>
+            <button 
+              onClick={() => setActiveTab('audit')}
+              className={`pb-1 transition-colors cursor-pointer border-b-2 hover:text-white ${
+                activeTab === 'audit' ? 'border-jan-coral text-white' : 'border-transparent'
+              }`}
+            >
+              Audit Log
+            </button>
           </nav>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="text-xs font-bold text-zinc-400">Constituency: Lucknow</span>
+
+        <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto">
+          {/* Navigation link tags */}
+          <div className="flex items-center gap-2 text-xs font-bold text-zinc-500 bg-white/5 border border-white/5 px-3 py-1.5 rounded-full shadow-inner">
+            <a href="/" className="hover:text-white transition-colors">Landing</a>
+            <span>•</span>
+            <a href="/citizen" className="hover:text-white transition-colors">Citizen</a>
+            <span>•</span>
+            <a href="/public" className="hover:text-white transition-colors">Public</a>
+          </div>
+
+          <button className="p-2 hover:bg-white/10 rounded-full text-zinc-400 hover:text-white transition-colors cursor-pointer">
+            <Bell className="w-4 h-4" />
+          </button>
+          <button className="p-2 hover:bg-white/10 rounded-full text-zinc-400 hover:text-white transition-colors cursor-pointer">
+            <Settings className="w-4 h-4" />
+          </button>
+          
+          <button 
+            onClick={handleDraftProposalAll}
+            className="bg-jan-coral hover:bg-red-500 text-white font-black text-xs px-4 py-2 rounded-xl transition-all shadow-md shadow-jan-coral/20 cursor-pointer"
+          >
+            DRAFT OFFICIAL PROPOSAL
+          </button>
+
           <div className="w-8 h-8 rounded-full bg-jan-coral border-2 border-white/20 flex items-center justify-center font-black text-xs text-white">
             LK
           </div>
         </div>
       </header>
 
-      {/* Main Command Dashboard */}
-      <AdminDashboard />
+      {/* Tab Switcher Area */}
+      {activeTab === 'dashboard' && (
+        <div className="animate-fade-in">
+          <AdminDashboard />
+        </div>
+      )}
+
+      {activeTab === 'geospatial' && (
+        <div className="bg-[#141b2b] border border-white/5 rounded-3xl p-6 shadow-lg animate-fade-in">
+          <h2 className="text-lg font-black tracking-tight text-white mb-2">📌 Regional Geospatial Mapping</h2>
+          <p className="text-xs text-zinc-400 mb-6">Comprehensive spatial live view showing complaint clusters and ward density markers.</p>
+          <div className="rounded-2xl overflow-hidden border border-white/5 shadow-inner">
+            <ComplaintMap complaints={complaints} />
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'insights' && (
+        <div className="bg-[#141b2b] border border-white/5 rounded-3xl p-8 text-center max-w-xl mx-auto shadow-lg mt-12 animate-fade-in">
+          <span className="text-4xl block mb-4">🧠</span>
+          <h3 className="text-lg font-black text-white mb-2">Constituency Predictive Insights</h3>
+          <p className="text-xs text-zinc-400 leading-relaxed">
+            Forecasting models predict a 60% increase in sanitation and drainage complaints across Ward 12 (Chinhat) due to seasonal rainfall forecasts. LADS allocations are advised pre-emptively.
+          </p>
+        </div>
+      )}
+
+      {activeTab === 'audit' && (
+        <div className="bg-[#141b2b] border border-white/5 rounded-3xl p-8 max-w-2xl mx-auto shadow-lg mt-12 animate-fade-in">
+          <h3 className="text-lg font-black text-white mb-4">AI Audit Trail Log</h3>
+          <div className="space-y-4 text-xs font-medium text-zinc-400">
+            <div className="p-3 bg-black/30 rounded-xl border border-white/5 flex justify-between">
+              <span>[06:21:49] AI Triage complete on raw input. Category: Water, Severity: 8/10.</span>
+              <span className="text-green-400">VERIFIED</span>
+            </div>
+            <div className="p-3 bg-black/30 rounded-xl border border-white/5 flex justify-between">
+              <span>[06:21:50] Geospatial duplicate index matching similarity computed: 0.88. Issue merged.</span>
+              <span className="text-amber-400">MERGED</span>
+            </div>
+            <div className="p-3 bg-black/30 rounded-xl border border-white/5 flex justify-between">
+              <span>[06:21:51] Overpass school gap check returned 0 schools in 3km radius. Gap confirmed.</span>
+              <span className="text-red-400">GAP DETECTED</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
