@@ -44,9 +44,23 @@ export function InsightPanel({ complaint, onClose, onStatusUpdate }: InsightPane
 
   const generateClientFallbackProposal = (c: any) => {
     const title = `PROJECT PROPOSAL: SANCTION OF URGENT DEPLOYMENT FOR ${c.category?.toUpperCase() || 'INFRASTRUCTURE'} WORKS IN WARD ${c.ward?.toUpperCase() || 'CHINHAT'}`;
+    
+    // Dynamic mapping of category to real schemes matching the backend (fiscal.py)
+    const schemeMapping: Record<string, string[]> = {
+      Water: ["Jal Jeevan Mission", "AMRUT"],
+      Roads: ["PMGSY (Pradhan Mantri Gram Sadak Yojana)", "CRIF (Central Road and Infrastructure Fund)"],
+      Education: ["Samagra Shiksha Abhiyan", "Saraswati Cycle Yojana"],
+      Health: ["National Health Mission (NHM)", "Ayushman Bharat"],
+      Sanitation: ["Swachh Bharat Mission", "AMRUT"],
+      Electricity: ["DDUGJY (Deen Dayal Upadhyaya Gram Jyoti Yojana)", "IPDS"],
+      Agriculture: ["PM-KISAN", "Soil Health Card Scheme"],
+      Other: ["MPLADS (Member of Parliament Local Area Development Scheme)"]
+    };
+
+    const matchedSchemes = schemeMapping[c.category || 'Other'] || schemeMapping['Other'];
     const schemes = c.scheme_match && c.scheme_match.length > 0 
       ? c.scheme_match.join(', ') 
-      : 'MPLADS (Member of Parliament Local Area Development Scheme)';
+      : matchedSchemes.join(', ');
     const cost = c.cost_estimate 
       ? `₹${Number(c.cost_estimate).toLocaleString('en-IN')}` 
       : '₹45,000';
