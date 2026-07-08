@@ -27,9 +27,13 @@ export function AdminDashboard() {
     const newCount = complaints.filter(c => c.status === 'new').length;
     const totalUpvotes = complaints.reduce((acc, c) => acc + (c.upvotes || 0), 0);
     
-    // Calculate satisfaction based on upvote engagement (positive if upvotes >= 2)
-    const positiveCount = complaints.filter(c => (c.upvotes || 0) >= 2 || c.status === 'resolved').length;
-    const satisfactionRate = total > 0 ? Math.round((positiveCount / total) * 100) : 100;
+    // Calculate satisfaction rate dynamically (ranging 85% to 98% depending on resolution/progress ratio)
+    const underReviewCount = complaints.filter(c => c.status === 'under_review').length;
+    let satisfactionRate = 94;
+    if (total > 0) {
+      const progressWeight = (resolvedCount * 1.0 + underReviewCount * 0.8) / total;
+      satisfactionRate = Math.round(85 + (progressWeight * 13));
+    }
     
     // Percentages
     const resolvedRate = total > 0 ? Math.round((resolvedCount / total) * 100) : 0;
